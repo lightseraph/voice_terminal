@@ -1,29 +1,33 @@
 /* USER CODE BEGIN Header */
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2023 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+ ******************************************************************************
+ * @file           : main.c
+ * @brief          : Main program body
+ ******************************************************************************
+ * @attention
+ *
+ * Copyright (c) 2023 STMicroelectronics.
+ * All rights reserved.
+ *
+ * This software is licensed under terms that can be found in the LICENSE file
+ * in the root directory of this software component.
+ * If no LICENSE file comes with this software, it is provided AS-IS.
+ *
+ ******************************************************************************
+ */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "bk9535.h"
+#include "syscall.h"
+#include "key.h"
+#include "config.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -55,7 +59,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+vu32 time_delay;
 /* USER CODE END 0 */
 
 /**
@@ -65,7 +69,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+  USER_DATA.rUserFreqIndex = DEFAULT_FREQ;
+  USER_DATA.UserId.dword = DEF_USER_ID;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -87,8 +92,26 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_TIM6_Init();
+  MX_TIM22_Init();
   /* USER CODE BEGIN 2 */
+  KEY_Config();
+  HAL_Delay(100);
 
+  rWorkChannel = CHA;
+  if (BK_Init())
+    Flash_LED(LED_GREEN, 50, 5, LIGHT_ON);
+
+  t_PCMCfg cfg;
+  cfg.bclk = PCM_SCK_I;
+  cfg.dat = PCM_SDA_I;
+  cfg.ch = RIGHT_CHANNEL;
+  cfg.mode = PCM_SLAVE;
+  cfg.lrck = PCM_LRCK_I;
+  BK_Tx_I2SOpen(cfg);
+  SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
+  // TX_TuneFreq(648100);
+  TX_WriteID(USER_DATA.UserId.dword);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -98,6 +121,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    delay_nms(50);
+    KEY_Scan();
   }
   /* USER CODE END 3 */
 }

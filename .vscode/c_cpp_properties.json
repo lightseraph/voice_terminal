@@ -1,0 +1,56 @@
+//
+// !!! WARNING !!! AUTO-GENERATED FILE!
+// PLEASE DO NOT MODIFY IT AND USE "platformio.ini":
+// https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags
+//
+{
+    "configurations": [
+        {
+            "name": "PlatformIO",
+            "includePath": [
+                "/home/light/project/voice_terminal/include",
+                "/home/light/project/voice_terminal",
+                "/home/light/project/voice_terminal/Core/Inc",
+                "/home/light/project/voice_terminal/Drivers/CMSIS/Include",
+                "/home/light/project/voice_terminal/Drivers/CMSIS/Device/ST/STM32L0xx/Include",
+                "/home/light/project/voice_terminal/Drivers/STM32L0xx_HAL_Driver/Inc",
+                "/home/light/project/voice_terminal/Drivers/STM32L0xx_HAL_Driver/Inc/Legacy",
+                "/home/light/project/voice_terminal/lib/BK9535",
+                "/home/light/project/voice_terminal/lib/IR",
+                "/home/light/project/voice_terminal/lib/key",
+                ""
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": true,
+                "path": [
+                    "/home/light/project/voice_terminal/include",
+                    "/home/light/project/voice_terminal",
+                    "/home/light/project/voice_terminal/Core/Inc",
+                    "/home/light/project/voice_terminal/Drivers/CMSIS/Include",
+                    "/home/light/project/voice_terminal/Drivers/CMSIS/Device/ST/STM32L0xx/Include",
+                    "/home/light/project/voice_terminal/Drivers/STM32L0xx_HAL_Driver/Inc",
+                    "/home/light/project/voice_terminal/Drivers/STM32L0xx_HAL_Driver/Inc/Legacy",
+                    "/home/light/project/voice_terminal/lib/BK9535",
+                    "/home/light/project/voice_terminal/lib/IR",
+                    "/home/light/project/voice_terminal/lib/key",
+                    ""
+                ]
+            },
+            "defines": [
+                "F_CPU=32000000L",
+                "PLATFORMIO=60107",
+                "STM32L051xx",
+                "STM32L051xx",
+                ""
+            ],
+            "cStandard": "c99",
+            "compilerPath": "/home/light/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
+            "compilerArgs": [
+                "-mthumb",
+                "-mcpu=cortex-m0plus",
+                ""
+            ]
+        }
+    ],
+    "version": 4
+}
