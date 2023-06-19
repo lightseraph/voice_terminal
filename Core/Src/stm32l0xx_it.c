@@ -153,6 +153,7 @@ void EXTI0_1_IRQHandler(void)
 
   /* USER CODE END EXTI0_1_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(FREQ_Pin);
+  HAL_GPIO_EXTI_IRQHandler(SW_Pin);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
   EXTI->PR = EXTI_LINE_0; // 清除中断标志位
 
