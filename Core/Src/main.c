@@ -93,7 +93,7 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM6_Init();
-  MX_TIM22_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   KEY_Config();
   HAL_Delay(100);
