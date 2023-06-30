@@ -1,9 +1,11 @@
 #include "main.h"
 
-#define KEY_PIN FREQ_Pin // 注意查看中断服务函数是否与该管脚对应
+#define KEY_Minus_PIN SW_MInus_Pin // 注意查看中断服务函数是否与该管脚对应
+#define KEY_Plus_PIN SW_Plus_Pin   // 注意查看中断服务函数是否与该管脚对应
+#define KEYS 2
 
 // 定时器为100ms定时
-#define KEY_TIME_IDLE 4      // 按键动作空闲时间
+#define KEY_TIME_IDLE 5      // 按键动作空闲时间
 #define KEY_TIME_CONTINUS 20 // 按键动作持续时间
 #define KEY_TIME_OUT 40      // 按键超时
 
@@ -40,6 +42,6 @@ typedef struct
 
 void KEY_Config(void);
 void KEY_Scan(void);
-void KEY_Process(void);
+void KEY_Process(int key_num);
 
-extern KEY_PROCESS_TypeDef key;
+extern KEY_PROCESS_TypeDef key[KEYS];

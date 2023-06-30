@@ -57,20 +57,20 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define IR_Pin GPIO_PIN_4
+#define IR_Pin GPIO_PIN_3
 #define IR_GPIO_Port GPIOA
 #define LED_RED_Pin GPIO_PIN_5
 #define LED_RED_GPIO_Port GPIOA
 #define LED_GREEN_Pin GPIO_PIN_6
 #define LED_GREEN_GPIO_Port GPIOA
-#define FREQ_Pin GPIO_PIN_0
-#define FREQ_GPIO_Port GPIOB
-#define FREQ_EXTI_IRQn EXTI0_1_IRQn
-#define SW_Pin GPIO_PIN_1
-#define SW_GPIO_Port GPIOB
-#define SW_EXTI_IRQn EXTI0_1_IRQn
-#define CE_Pin GPIO_PIN_13
-#define CE_GPIO_Port GPIOB
+#define SW_MInus_Pin GPIO_PIN_0
+#define SW_MInus_GPIO_Port GPIOB
+#define SW_MInus_EXTI_IRQn EXTI0_1_IRQn
+#define SW_Plus_Pin GPIO_PIN_1
+#define SW_Plus_GPIO_Port GPIOB
+#define SW_Plus_EXTI_IRQn EXTI0_1_IRQn
+#define CE_Pin GPIO_PIN_12
+#define CE_GPIO_Port GPIOA
 #define I2C_SCK_Pin GPIO_PIN_6
 #define I2C_SCK_GPIO_Port GPIOB
 #define I2C_SDA_Pin GPIO_PIN_7

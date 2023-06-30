@@ -28,6 +28,7 @@
 #include "syscall.h"
 #include "key.h"
 #include "config.h"
+#include "irda.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -94,7 +95,11 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM6_Init();
   MX_TIM2_Init();
+  MX_TIM21_Init();
+  MX_TIM22_Init();
   /* USER CODE BEGIN 2 */
+
+  HAL_TIM_Base_Start_IT(&htim2);
   KEY_Config();
   HAL_Delay(100);
 
@@ -121,8 +126,9 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    delay_nms(50);
+    delay_nms(100);
     KEY_Scan();
+    printf("0x%0x\n", remote_scan());
   }
   /* USER CODE END 3 */
 }

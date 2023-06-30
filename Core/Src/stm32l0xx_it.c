@@ -57,7 +57,9 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim6;
+extern TIM_HandleTypeDef htim21;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -151,24 +153,51 @@ void EXTI0_1_IRQHandler(void)
   /* USER CODE BEGIN EXTI0_1_IRQn 0 */
 
   /* USER CODE END EXTI0_1_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(FREQ_Pin);
-  HAL_GPIO_EXTI_IRQHandler(SW_Pin);
+  HAL_GPIO_EXTI_IRQHandler(SW_MInus_Pin);
+  HAL_GPIO_EXTI_IRQHandler(SW_Plus_Pin);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
   EXTI->PR = EXTI_LINE_0; // 清除中断标志位
 
-  if ((GPIOB->IDR & KEY_PIN) == 0)
+  if ((GPIOB->IDR & KEY_Minus_PIN) == 0)
   {
-    key.flag.key_state = KEY_STATE_PRESS; // 按下
-    key.flag.check = 1;
-    key.time_continus = 0; // 按键持续时间置零，准备开始计时
+    key[0].flag.key_state = KEY_STATE_PRESS; // 按下
+    key[0].flag.check = 1;
+    key[0].time_continus = 0; // 按键持续时间置零，准备开始计时
   }
-  else
+  else if ((GPIOB->IDR & KEY_Minus_PIN) != 0)
   {
-    key.flag.key_state = KEY_STATE_RELEASE; // 松开
-    key.flag.check = 1;
-    key.time_idle = 0; // 按键空闲时间置零，准备开始计时
+    key[0].flag.key_state = KEY_STATE_RELEASE; // 松开
+    key[0].flag.check = 1;
+    key[0].time_idle = 0; // 按键空闲时间置零，准备开始计时
+  }
+
+  if ((GPIOB->IDR & KEY_Plus_PIN) == 0)
+  {
+    key[1].flag.key_state = KEY_STATE_PRESS; // 按下
+    key[1].flag.check = 1;
+    key[1].time_continus = 0; // 按键持续时间置零，准备开始计时
+  }
+  else if ((GPIOB->IDR & KEY_Plus_PIN) != 0)
+  {
+    key[1].flag.key_state = KEY_STATE_RELEASE; // 松开
+    key[1].flag.check = 1;
+    key[1].time_idle = 0; // 按键空闲时间置零，准备开始计时
   }
   /* USER CODE END EXTI0_1_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM2 global interrupt.
+  */
+void TIM2_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM2_IRQn 0 */
+
+  /* USER CODE END TIM2_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim2);
+  /* USER CODE BEGIN TIM2_IRQn 1 */
+
+  /* USER CODE END TIM2_IRQn 1 */
 }
 
 /**
@@ -182,8 +211,23 @@ void TIM6_DAC_IRQHandler(void)
   HAL_TIM_IRQHandler(&htim6);
   /* USER CODE BEGIN TIM6_DAC_IRQn 1 */
   TIM6->SR = 0x0000; // 清除中断标志位
-  KEY_Process();
+  for (int i = 0; i < KEYS; i++)
+    KEY_Process(i);
   /* USER CODE END TIM6_DAC_IRQn 1 */
+}
+
+/**
+  * @brief This function handles TIM21 global interrupt.
+  */
+void TIM21_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM21_IRQn 0 */
+
+  /* USER CODE END TIM21_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim21);
+  /* USER CODE BEGIN TIM21_IRQn 1 */
+
+  /* USER CODE END TIM21_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */
