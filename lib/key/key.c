@@ -2,6 +2,7 @@
 #include "bk9535.h"
 #include "tim.h"
 #include "syscall.h"
+#include "eeprom.h"
 #include <stdio.h>
 
 KEY_PROCESS_TypeDef key[KEYS];
@@ -80,6 +81,8 @@ void KEY_Process(int key_num)
                 if (key[key_num].press_cnt > 1)
                 {                                                         // 连击事件
                     key[key_num].event_current_type = EVENT_DOUBLE_CLICK; // 分配按键事件类型
+                    if (key[key_num].press_cnt > 4)
+                        key[key_num].event_current_type = EVENT_MORE_CLICK;
                 }
                 else
                 {                                                        // 单击事件
@@ -120,18 +123,40 @@ void KEY_Scan(void)
                 {
                 case 0:
                     SwitchNextFreq();
-                    Flash_LED(LED_GREEN, 200, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
+                    Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
                     break;
                 case 1:
+                    SwitchPrevFreq();
+                    EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
+                    Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
                     break;
                 }
             case EVENT_DOUBLE_CLICK:
                 switch (i)
                 {
                 case 0:
-                    // SwitchPrevFreq();
-                    TX_Trigger();
-                    Flash_LED(LED_GREEN, 200, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    local_id++;
+                    if (local_id == 16)
+                        local_id = 0;
+                    EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
+                    Flash_LED(LED_GREEN, 100, 1, FOLLOW_PREVIOUS);
+                    break;
+                case 1:
+                    if (local_id == 0)
+                        local_id = 15;
+                    else
+                        local_id--;
+                    EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
+                    Flash_LED(LED_GREEN, 100, 1, FOLLOW_PREVIOUS);
+                    break;
+                }
+            case EVENT_MORE_CLICK:
+                switch (i)
+                {
+                case 0:
+                    Init_Param();
+                    Flash_LED(LED_RED, 300, 3, FOLLOW_PREVIOUS);
                     break;
                 case 1:
                     break;

@@ -29,6 +29,8 @@
 #include "key.h"
 #include "config.h"
 #include "irda.h"
+#include "irtx.h"
+#include "eeprom.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,16 +63,35 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 vu32 time_delay;
+uint8_t local_id = 0;
+
+const uint8_t LOCAL_ID[16] = {
+    0x10,
+    0x11,
+    0x12,
+    0x13,
+    0x14,
+    0x15,
+    0x16,
+    0x17,
+    0x18,
+    0x19,
+    0x20,
+    0x21,
+    0x22,
+    0x23,
+    0x24,
+    0x25};
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  USER_DATA.rUserFreqIndex = DEFAULT_FREQ;
+  // USER_DATA.rUserFreqIndex = DEFAULT_FREQ;
   USER_DATA.UserId.dword = DEF_USER_ID;
   /* USER CODE END 1 */
 
@@ -104,6 +125,8 @@ int main(void)
   HAL_Delay(100);
 
   rWorkChannel = CHA;
+  EEPROM_Read_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
+  EEPROM_Read_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
   if (BK_Init())
     Flash_LED(LED_GREEN, 50, 5, LIGHT_ON);
 
@@ -123,20 +146,30 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    static uint8_t interval = 0;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    delay_nms(100);
+    delay_nms(50);
     KEY_Scan();
-    printf("0x%0x\n", remote_scan());
+    if (interval > 20)
+    {
+      IR_PostData(0x02);
+      interval = 0;
+    }
+    // HAL_GPIO_WritePin(IR_GPIO_Port, IR_Pin, SET);
+    if (remote_scan() == 0x02)
+      Flash_LED(LED_RED, 50, 1, FOLLOW_PREVIOUS);
+    // TX_Prevent_RF_UnLock();
+    interval++;
   }
   /* USER CODE END 3 */
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -144,12 +177,12 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -162,9 +195,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -183,13 +215,19 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void Init_Param(void)
+{
+  uint8_t temp = 0;
+  EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &temp, 1); // 默认出厂设置id索引号
+  temp = 1;
+  EEPROM_WRITE_W_CHECK(FREQ_ADDR, &temp, 1); // 默认出厂设置频点索引号
+}
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -201,14 +239,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

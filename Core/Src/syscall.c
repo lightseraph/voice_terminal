@@ -1,5 +1,6 @@
 #include "syscall.h"
 #include "usart.h"
+#include "tim.h"
 #include <errno.h>
 #include <sys/unistd.h> // STDOUT_FILENO, STDERR_FILENO
 
@@ -67,4 +68,13 @@ int _write(int file, char *data, int len)
 
     // return # of bytes written - as best we can tell
     return (status == HAL_OK ? len : 0);
+}
+
+void IR_delay(uint16_t num)
+{
+    __HAL_TIM_SET_COUNTER(&htim22, 0); // 将装载值计0
+    HAL_TIM_Base_Start(&htim22);       // 开始计数
+    while (__HAL_TIM_GetCounter(&htim22) < num)
+        ;                       // 当装载值小于预设值时循环
+    HAL_TIM_Base_Stop(&htim22); // 结束延时
 }

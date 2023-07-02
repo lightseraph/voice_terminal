@@ -108,6 +108,13 @@ void Error_Handler(void);
   typedef __I uint8_t vuc8;
 
   extern vu32 time_delay;
+  extern const uint8_t LOCAL_ID[16];
+  extern uint8_t local_id;
+
+#define LOCAL_ID_ADDR 0x00
+#define FREQ_ADDR 0x01
+
+  void Init_Param(void);
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
