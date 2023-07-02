@@ -29,6 +29,11 @@
 #include "key.h"
 #include "config.h"
 #include "irda.h"
+#include "irtx.h"
+#include "eeprom.h"
+#include "oled.h"
+#include "stdio.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,6 +66,25 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 vu32 time_delay;
+uint8_t local_id = 0;
+
+const uint8_t LOCAL_ID[16] = {
+    0x10,
+    0x11,
+    0x12,
+    0x13,
+    0x14,
+    0x15,
+    0x16,
+    0x17,
+    0x18,
+    0x19,
+    0x1A,
+    0x1B,
+    0x1C,
+    0x1E,
+    0x1F,
+    0x20};
 /* USER CODE END 0 */
 
 /**
@@ -70,7 +94,7 @@ vu32 time_delay;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  USER_DATA.rUserFreqIndex = DEFAULT_FREQ;
+  // USER_DATA.rUserFreqIndex = DEFAULT_FREQ;
   USER_DATA.UserId.dword = DEF_USER_ID;
   /* USER CODE END 1 */
 
@@ -101,12 +125,18 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim2);
   KEY_Config();
+
   HAL_Delay(100);
 
   rWorkChannel = CHA;
+  EEPROM_Read_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
+  EEPROM_Read_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
+  Flash_LED(LED_RED, 50, 5, LIGHT_ON);
+  HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, SET);
+
   if (BK_Init())
     Flash_LED(LED_GREEN, 50, 5, LIGHT_ON);
-
+  OLED_Init();
   t_PCMCfg cfg;
   cfg.bclk = PCM_SCK_I;
   cfg.dat = PCM_SDA_I;
@@ -115,20 +145,40 @@ int main(void)
   cfg.lrck = PCM_LRCK_I;
   BK_Tx_I2SOpen(cfg);
   SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
-  // TX_TuneFreq(648100);
-  TX_WriteID(USER_DATA.UserId.dword);
+  OLED_ShowString(35, 23, (u8 *)"FREQ:", 12);
+  OLED_ShowString(35, 45, (u8 *)"ID:", 12);
+  char freq_char[9];
+  float freq_num = FreqTableA[USER_DATA.rUserFreqIndex] / 10.0;
+  sprintf(freq_char, "%.1f", freq_num);
+  OLED_ShowString(35, 21, (u8 *)freq_char, 16);
+  OLED_ShowString(77, 25, (u8 *)"MHz", 12);
+  OLED_ShowString(35, 43, (u8 *)"ID:", 16);
+  Disp_ID(local_id);
+  //  OLED_ShowNum(50, 40, 12, 2, 16);
+  //        TX_WriteID(USER_DATA.UserId.dword);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    static uint8_t interval = 0;
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    delay_nms(100);
+    delay_nms(50);
     KEY_Scan();
-    printf("0x%0x\n", remote_scan());
+    if (interval > 20)
+    {
+      IR_PostData(0x02);
+      interval = 0;
+    }
+    // HAL_GPIO_WritePin(IR_GPIO_Port, IR_Pin, SET);   限流电阻15欧，红外发射工作电流130mA
+    if (remote_scan() == 0x02)
+      Flash_LED(LED_RED, 50, 1, FOLLOW_PREVIOUS);
+
+    interval++;
   }
   /* USER CODE END 3 */
 }
@@ -183,7 +233,28 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void Init_Param(void)
+{
+  uint8_t temp = 0;
+  EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &temp, 1); // 默认出厂设置id索引号
+  temp = 1;
+  EEPROM_WRITE_W_CHECK(FREQ_ADDR, &temp, 1); // 默认出厂设置频点索引号
+}
 
+void Disp_Freq(u8 freq_index)
+{
+  char freq_char[5];
+  float freq_num = FreqTableA[freq_index] / 10.0;
+  sprintf(freq_char, "%.1f", freq_num);
+  OLED_ShowString(35, 21, (u8 *)freq_char, 16);
+}
+
+void Disp_ID(u8 id_index)
+{
+  char id_char[5];
+  sprintf(id_char, "%#X", LOCAL_ID[id_index]);
+  OLED_ShowString(62, 43, (u8 *)id_char, 16);
+}
 /* USER CODE END 4 */
 
 /**

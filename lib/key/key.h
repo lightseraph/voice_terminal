@@ -1,3 +1,6 @@
+#ifndef __KEY_H
+#define __KEY_H
+
 #include "main.h"
 
 #define KEY_Minus_PIN SW_MInus_Pin // 注意查看中断服务函数是否与该管脚对应
@@ -14,6 +17,7 @@
 #define EVENT_SHORT_CLICK 0x01  // 短按
 #define EVENT_DOUBLE_CLICK 0x02 // 连击
 #define EVENT_LONG_CLICK 0x03   // 长按
+#define EVENT_MORE_CLICK 0x04   // 多次连击
 
 // 按键状态
 #define KEY_STATE_IDLE 0x00    // 空闲
@@ -45,3 +49,5 @@ void KEY_Scan(void);
 void KEY_Process(int key_num);
 
 extern KEY_PROCESS_TypeDef key[KEYS];
+
+#endif

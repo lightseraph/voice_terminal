@@ -8,7 +8,7 @@ const uint8_t REMOTE_ID = 0xBF;
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim == &htim3)
+    if (htim == &htim2)
     {
         if (g_remote_sta & 0x80) /* 上次有数据被接收到了 */
         {
@@ -34,7 +34,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-    if (htim == &htim3)
+    if (htim == &htim2)
     {
         if (g_valid_channel != 2)
         {

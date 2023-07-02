@@ -19,9 +19,9 @@ void IR_PostData(uint8_t data)
 void IR_HIGH(uint16_t hold_time_us)
 {
     HAL_GPIO_WritePin(IR_GPIO_Port, IR_Pin, RESET);
-    HAL_TIM_Base_Start_IT(&htim1);
+    HAL_TIM_Base_Start_IT(&htim21);
     IR_delay(hold_time_us);
-    HAL_TIM_Base_Stop_IT(&htim1);
+    HAL_TIM_Base_Stop_IT(&htim21);
     HAL_GPIO_WritePin(IR_GPIO_Port, IR_Pin, RESET);
 }
 

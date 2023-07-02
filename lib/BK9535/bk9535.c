@@ -343,10 +343,10 @@ u8 TX_I2C_Write(u8 reg, u8 *buf)
 
     if (reg <= 0x0b)
     {
-        /* for (i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             analog_reg_val[reg][i] = buf[i];
-        } */
+        }
     }
     //
     retry = TX_I2C_RETRY_TIMES;
@@ -377,11 +377,11 @@ u8 TX_I2C_Read(u8 reg, u8 *buf)
 
     if (reg <= 0x0b)
     {
-        /* for (i = 0; i < 4; i++)
+        for (i = 0; i < 4; i++)
         {
             buf[i] = analog_reg_val[reg][i];
         }
-        return TRUE; */
+        return 1;
     }
     else
     {
@@ -394,18 +394,16 @@ u8 TX_I2C_Read(u8 reg, u8 *buf)
 
             reg = reg << 1;
             reg |= 0x01;
-            // IIC_Wait_Ack();
             if (IIC_SendByte(reg))
                 continue;
-            // IIC_Wait_Ack();
 
             for (i = 0; i < 3; i++)
             {
-                buf[i] = IIC_ReadByte();
-                IIC_Ack();
+                buf[i] = IIC_ReadByte(1);
+                // IIC_Ack();
             }
-            buf[i] = IIC_ReadByte();
-            IIC_NAck();
+            buf[i] = IIC_ReadByte(0);
+            // IIC_NAck();
             break;
         }
         IIC_Stop();
