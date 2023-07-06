@@ -157,31 +157,32 @@ void EXTI0_1_IRQHandler(void)
   HAL_GPIO_EXTI_IRQHandler(SW_Plus_Pin);
   /* USER CODE BEGIN EXTI0_1_IRQn 1 */
   EXTI->PR = EXTI_LINE_0; // 清除中断标志位
+  EXTI->PR = EXTI_LINE_1;
 
   if ((GPIOB->IDR & KEY_Minus_PIN) == 0)
-  {
-    key[0].flag.key_state = KEY_STATE_PRESS; // 按下
-    key[0].flag.check = 1;
-    key[0].time_continus = 0; // 按键持续时间置零，准备开始计时
-  }
-  else if ((GPIOB->IDR & KEY_Minus_PIN) != 0)
-  {
-    key[0].flag.key_state = KEY_STATE_RELEASE; // 松开
-    key[0].flag.check = 1;
-    key[0].time_idle = 0; // 按键空闲时间置零，准备开始计时
-  }
-
-  if ((GPIOB->IDR & KEY_Plus_PIN) == 0)
   {
     key[1].flag.key_state = KEY_STATE_PRESS; // 按下
     key[1].flag.check = 1;
     key[1].time_continus = 0; // 按键持续时间置零，准备开始计时
   }
-  else if ((GPIOB->IDR & KEY_Plus_PIN) != 0)
+  else if ((GPIOB->IDR & KEY_Minus_PIN) != 0 && key[1].flag.key_state == KEY_STATE_PRESS)
   {
     key[1].flag.key_state = KEY_STATE_RELEASE; // 松开
     key[1].flag.check = 1;
     key[1].time_idle = 0; // 按键空闲时间置零，准备开始计时
+  }
+
+  if ((GPIOB->IDR & KEY_Plus_PIN) == 0)
+  {
+    key[0].flag.key_state = KEY_STATE_PRESS; // 按下
+    key[0].flag.check = 1;
+    key[0].time_continus = 0; // 按键持续时间置零，准备开始计时
+  }
+  else if ((GPIOB->IDR & KEY_Plus_PIN) != 0 && key[0].flag.key_state == KEY_STATE_PRESS)
+  {
+    key[0].flag.key_state = KEY_STATE_RELEASE; // 松开
+    key[0].flag.check = 1;
+    key[0].time_idle = 0; // 按键空闲时间置零，准备开始计时
   }
   /* USER CODE END EXTI0_1_IRQn 1 */
 }

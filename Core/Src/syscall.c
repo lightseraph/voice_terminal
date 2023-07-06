@@ -6,9 +6,9 @@
 
 vs8 keypress_remain = 0;
 
-void delay_nus(vu32 nus)
+void delay_nus(u32 nus)
 {
-    if (SysTick_Config(SystemCoreClock / 1000000))
+    if (SysTick_Config(75))
     {
         while (1)
             ;
@@ -20,9 +20,9 @@ void delay_nus(vu32 nus)
     SysTick->VAL = 0X00;                       // 清空计数器
 }
 
-void delay_nms(vu32 nms)
+void delay_nms(u32 nms)
 {
-    if (SysTick_Config(SystemCoreClock / 1000))
+    if (SysTick_Config(SystemCoreClock / 1000UL - 1))
     {
         while (1)
             ;

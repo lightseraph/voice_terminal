@@ -21,7 +21,7 @@
 // 控制I2C速度的延时
 void IIC_Delay(void)
 {
-	delay_nus(2);
+	delay_nus(1);
 }
 // 电容触摸芯片IIC接口初始化
 void IIC_Init(void)

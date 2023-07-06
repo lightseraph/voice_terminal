@@ -127,6 +127,9 @@ int main(void)
   rWorkChannel = CHA;
   EEPROM_Read_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
   EEPROM_Read_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
+  Flash_LED(LED_RED, 50, 5, LIGHT_ON);
+  HAL_GPIO_WritePin(CE_GPIO_Port, CE_Pin, SET);
+
   if (BK_Init())
     Flash_LED(LED_GREEN, 50, 5, LIGHT_ON);
 
@@ -138,8 +141,8 @@ int main(void)
   cfg.lrck = PCM_LRCK_I;
   BK_Tx_I2SOpen(cfg);
   SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
-  // TX_TuneFreq(648100);
-  TX_WriteID(USER_DATA.UserId.dword);
+  // TX_WriteID(USER_DATA.UserId.dword);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

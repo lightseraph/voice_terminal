@@ -125,13 +125,16 @@ void KEY_Scan(void)
                     SwitchNextFreq();
                     EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
                     Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    // HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, RESET);
                     break;
                 case 1:
                     SwitchPrevFreq();
                     EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
                     Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    // HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, SET);
                     break;
                 }
+                break;
             case EVENT_DOUBLE_CLICK:
                 switch (i)
                 {
@@ -151,6 +154,7 @@ void KEY_Scan(void)
                     Flash_LED(LED_GREEN, 100, 1, FOLLOW_PREVIOUS);
                     break;
                 }
+                break;
             case EVENT_MORE_CLICK:
                 switch (i)
                 {
@@ -161,12 +165,14 @@ void KEY_Scan(void)
                 case 1:
                     break;
                 }
+                break;
             case EVENT_LONG_CLICK:
                 switch (i)
                 {
                 case 0:
                     HAL_GPIO_TogglePin(CE_GPIO_Port, CE_Pin);
                     HAL_GPIO_TogglePin(LED_RED_GPIO_Port, LED_RED_Pin);
+                    delay_nms(1);
                     if (HAL_GPIO_ReadPin(CE_GPIO_Port, CE_Pin))
                     {
                         if (BK_Init())
@@ -186,14 +192,14 @@ void KEY_Scan(void)
                 case 1:
                     break;
                 }
+                break;
             default:
                 // printf("none\r\n");
                 break;
-
-                // 事件处理完需更新前态和现态
-                key[i].event_previous_type = key[i].event_current_type;
-                key[i].event_current_type = EVENT_NONE_CLICK;
             }
+            // 事件处理完需更新前态和现态
+            key[i].event_previous_type = key[i].event_current_type;
+            key[i].event_current_type = EVENT_NONE_CLICK;
         }
     }
 }

@@ -82,7 +82,7 @@ typedef struct
 #define PAIR_FREQ_CHA 7700 // A通道对频频点
 #define PAIR_FREQ_CHB 7490 // B通道对频频点
 
-#define FREQ_NUM 7  // 工作频点数量
+#define FREQ_NUM 4  // 工作频点数量
 #define FREQ_STEP 3 // 工作频点间隔
 
 #define START_FREQ_CHA 6400 // A通道起始频点
