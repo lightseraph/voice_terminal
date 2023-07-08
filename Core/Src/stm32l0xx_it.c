@@ -227,7 +227,7 @@ void TIM21_IRQHandler(void)
   /* USER CODE END TIM21_IRQn 0 */
   HAL_TIM_IRQHandler(&htim21);
   /* USER CODE BEGIN TIM21_IRQn 1 */
-
+  HAL_GPIO_TogglePin(IR_GPIO_Port, IR_Pin);
   /* USER CODE END TIM21_IRQn 1 */
 }
 

@@ -143,7 +143,7 @@ void KEY_Scan(void)
                     if (local_id == 16)
                         local_id = 0;
                     EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
-                    Flash_LED(LED_GREEN, 100, 1, FOLLOW_PREVIOUS);
+                    Flash_LED(LED_GREEN, 100, 2, FOLLOW_PREVIOUS);
                     break;
                 case 1:
                     if (local_id == 0)
@@ -151,7 +151,7 @@ void KEY_Scan(void)
                     else
                         local_id--;
                     EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
-                    Flash_LED(LED_GREEN, 100, 1, FOLLOW_PREVIOUS);
+                    Flash_LED(LED_GREEN, 100, 2, FOLLOW_PREVIOUS);
                     break;
                 }
                 break;
@@ -187,6 +187,7 @@ void KEY_Scan(void)
                         BK_Tx_I2SOpen(cfg);
                         SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
                         TX_WriteID(USER_DATA.UserId.dword);
+                        TX_Trigger();
                     }
                     break;
                 case 1:

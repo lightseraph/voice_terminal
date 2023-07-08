@@ -8,7 +8,7 @@ vs8 keypress_remain = 0;
 
 void delay_nus(u32 nus)
 {
-    if (SysTick_Config(75))
+    if (SysTick_Config(80))
     {
         while (1)
             ;

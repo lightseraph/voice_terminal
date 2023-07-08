@@ -22,7 +22,7 @@
 #define CHIP_DEV_TX 0x25
 #define TX_Chip_ID 0x35
 #define TX_INIT_RETRY_TIMES 10
-#define TX_I2C_RETRY_TIMES 5
+#define TX_I2C_RETRY_TIMES 3
 
 #define TRIGGER_RETRY 3
 
