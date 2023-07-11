@@ -125,12 +125,14 @@ void KEY_Scan(void)
                     SwitchNextFreq();
                     EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
                     Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    Disp_Freq(USER_DATA.rUserFreqIndex);
                     // HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, RESET);
                     break;
                 case 1:
                     SwitchPrevFreq();
                     EEPROM_WRITE_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
                     Flash_LED(LED_GREEN, 100, USER_DATA.rUserFreqIndex, FOLLOW_PREVIOUS);
+                    Disp_Freq(USER_DATA.rUserFreqIndex);
                     // HAL_GPIO_WritePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin, SET);
                     break;
                 }
@@ -144,6 +146,7 @@ void KEY_Scan(void)
                         local_id = 0;
                     EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
                     Flash_LED(LED_GREEN, 100, 2, FOLLOW_PREVIOUS);
+                    Disp_ID(local_id);
                     break;
                 case 1:
                     if (local_id == 0)
@@ -152,6 +155,7 @@ void KEY_Scan(void)
                         local_id--;
                     EEPROM_WRITE_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
                     Flash_LED(LED_GREEN, 100, 2, FOLLOW_PREVIOUS);
+                    Disp_ID(local_id);
                     break;
                 }
                 break;

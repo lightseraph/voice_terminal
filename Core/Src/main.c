@@ -31,6 +31,9 @@
 #include "irda.h"
 #include "irtx.h"
 #include "eeprom.h"
+#include "oled.h"
+#include "stdio.h"
+#include "stdlib.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,18 +79,18 @@ const uint8_t LOCAL_ID[16] = {
     0x17,
     0x18,
     0x19,
-    0x20,
-    0x21,
-    0x22,
-    0x23,
-    0x24,
-    0x25};
+    0x1A,
+    0x1B,
+    0x1C,
+    0x1E,
+    0x1F,
+    0x20};
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -122,8 +125,9 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim2);
   KEY_Config();
-  HAL_Delay(100);
 
+  HAL_Delay(100);
+  OLED_Init();
   rWorkChannel = CHA;
   EEPROM_Read_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
   EEPROM_Read_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
@@ -132,7 +136,7 @@ int main(void)
 
   if (BK_Init())
     Flash_LED(LED_GREEN, 50, 5, LIGHT_ON);
-
+  OLED_Init();
   t_PCMCfg cfg;
   cfg.bclk = PCM_SCK_I;
   cfg.dat = PCM_SDA_I;
@@ -141,7 +145,17 @@ int main(void)
   cfg.lrck = PCM_LRCK_I;
   BK_Tx_I2SOpen(cfg);
   SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
-  // TX_WriteID(USER_DATA.UserId.dword);
+  // OLED_ShowString(35, 23, (u8 *)"FREQ:", 12);
+  // OLED_ShowString(35, 45, (u8 *)"ID:", 12);
+  char freq_char[9];
+  float freq_num = FreqTableA[USER_DATA.rUserFreqIndex] / 10.0;
+  sprintf(freq_char, "%.1f", freq_num);
+  OLED_ShowString(35, 21, (u8 *)freq_char, 16);
+  OLED_ShowString(77, 25, (u8 *)"MHz", 12);
+  OLED_ShowString(35, 43, (u8 *)"ID:", 16);
+  Disp_ID(local_id);
+  // OLED_ShowNum(50, 40, 12, 2, 16);
+  //     TX_WriteID(USER_DATA.UserId.dword);
 
   /* USER CODE END 2 */
 
@@ -170,9 +184,9 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -180,12 +194,12 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -198,9 +212,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -226,12 +239,27 @@ void Init_Param(void)
   temp = 1;
   EEPROM_WRITE_W_CHECK(FREQ_ADDR, &temp, 1); // 默认出厂设置频点索引号
 }
+
+void Disp_Freq(u8 freq_index)
+{
+  char freq_char[5];
+  float freq_num = FreqTableA[freq_index] / 10.0;
+  sprintf(freq_char, "%.1f", freq_num);
+  OLED_ShowString(35, 21, (u8 *)freq_char, 16);
+}
+
+void Disp_ID(u8 id_index)
+{
+  char id_char[5];
+  sprintf(id_char, "%#X", LOCAL_ID[id_index]);
+  OLED_ShowString(62, 43, (u8 *)id_char, 16);
+}
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -243,14 +271,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

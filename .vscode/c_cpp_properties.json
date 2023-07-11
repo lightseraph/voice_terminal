@@ -10,6 +10,7 @@
             "includePath": [
                 "/home/light/project/voice_terminal/include",
                 "/home/light/project/voice_terminal",
+                "/home/light/project/voice_terminal/lib/oled",
                 "/home/light/project/voice_terminal/lib/key",
                 "/home/light/project/voice_terminal/lib/IR",
                 "/home/light/project/voice_terminal/lib/eeprom",
@@ -26,6 +27,7 @@
                 "path": [
                     "/home/light/project/voice_terminal/include",
                     "/home/light/project/voice_terminal",
+                    "/home/light/project/voice_terminal/lib/oled",
                     "/home/light/project/voice_terminal/lib/key",
                     "/home/light/project/voice_terminal/lib/IR",
                     "/home/light/project/voice_terminal/lib/eeprom",
