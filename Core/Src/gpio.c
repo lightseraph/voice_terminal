@@ -85,12 +85,6 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /**/
-  HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_PB6);
-
-  /**/
-  HAL_I2CEx_EnableFastModePlus(I2C_FASTMODEPLUS_PB7);
-
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
