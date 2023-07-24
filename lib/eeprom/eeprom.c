@@ -3,7 +3,7 @@
 
 void EEPROM_WRITE(uint16_t BiasAddress, uint8_t *Data, uint16_t len)
 {
-    uint16_t i;
+    /* uint16_t i;
     HAL_StatusTypeDef status = HAL_OK;
 
     HAL_FLASHEx_DATAEEPROM_Unlock();
@@ -12,7 +12,7 @@ void EEPROM_WRITE(uint16_t BiasAddress, uint8_t *Data, uint16_t len)
         status += HAL_FLASHEx_DATAEEPROM_Program(FLASH_TYPEPROGRAMDATA_BYTE, EEPROM_BASE_ADDR + BiasAddress + i, *Data);
         Data++;
     }
-    HAL_FLASHEx_DATAEEPROM_Lock();
+    HAL_FLASHEx_DATAEEPROM_Lock(); */
 }
 
 void EEPROM_READ(uint16_t BiasAddress, uint8_t *Buffer, uint16_t Len)

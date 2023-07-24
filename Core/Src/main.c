@@ -127,7 +127,7 @@ int main(void)
   KEY_Config();
 
   HAL_Delay(100);
-  OLED_Init();
+
   rWorkChannel = CHA;
   EEPROM_Read_W_CHECK(FREQ_ADDR, &USER_DATA.rUserFreqIndex, 1);
   EEPROM_Read_W_CHECK(LOCAL_ID_ADDR, &local_id, 1);
@@ -145,8 +145,8 @@ int main(void)
   cfg.lrck = PCM_LRCK_I;
   BK_Tx_I2SOpen(cfg);
   SwitchFreqByIndex(USER_DATA.rUserFreqIndex);
-  // OLED_ShowString(35, 23, (u8 *)"FREQ:", 12);
-  // OLED_ShowString(35, 45, (u8 *)"ID:", 12);
+  OLED_ShowString(35, 23, (u8 *)"FREQ:", 12);
+  OLED_ShowString(35, 45, (u8 *)"ID:", 12);
   char freq_char[9];
   float freq_num = FreqTableA[USER_DATA.rUserFreqIndex] / 10.0;
   sprintf(freq_char, "%.1f", freq_num);
@@ -154,8 +154,8 @@ int main(void)
   OLED_ShowString(77, 25, (u8 *)"MHz", 12);
   OLED_ShowString(35, 43, (u8 *)"ID:", 16);
   Disp_ID(local_id);
-  // OLED_ShowNum(50, 40, 12, 2, 16);
-  //     TX_WriteID(USER_DATA.UserId.dword);
+  //  OLED_ShowNum(50, 40, 12, 2, 16);
+  //        TX_WriteID(USER_DATA.UserId.dword);
 
   /* USER CODE END 2 */
 

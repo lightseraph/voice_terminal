@@ -1,5 +1,6 @@
 #include "oled.h"
 #include "oledfont.h"
+#include "ctiic.h"
 
 u8 OLED_GRAM[128][8]; // 定义SRAM缓存区
 
@@ -244,62 +245,19 @@ void OLED_Init(void)
 // 写命令
 void OLED_Write_Cmd(u8 command)
 {
-    OLED_Start();
-    OLED_SendByte(0x78); // OLED地址
-    OLED_Wait_Ack();
-    OLED_SendByte(0x00); // 写命令寄存器地址
-    OLED_Wait_Ack();
-    OLED_SendByte(command);
-    OLED_Wait_Ack();
-    OLED_Stop();
+    IIC_Start();
+    IIC_SendByte(0x78); // OLED地址
+    IIC_SendByte(0x00); // 写命令寄存器地址
+    IIC_SendByte(command);
+    IIC_Stop();
 }
 
 // 写数据
 void OLED_Write_Data(u8 data)
 {
-    OLED_Start();
-    OLED_SendByte(0x78); // OLED地址
-    OLED_Wait_Ack();
-    OLED_SendByte(0x40); // 写数据寄存器地址
-    OLED_Wait_Ack();
-    OLED_SendByte(data);
-    OLED_Wait_Ack();
-    OLED_Stop();
-}
-/********************OLED I2C 操作函数********************/
-void OLED_Start(void)
-{
-    OLED_SDA(1);
-    OLED_SCL(1);
-    OLED_SDA(0);
-    OLED_SCL(0);
-}
-
-void OLED_Stop(void)
-{
-    OLED_SDA(0);
-    OLED_SCL(1);
-    OLED_SDA(1);
-}
-
-void OLED_Wait_Ack(void)
-{
-    OLED_SCL(1);
-    OLED_SCL(0);
-}
-
-void OLED_SendByte(u8 txd)
-{
-    u8 t;
-    OLED_SCL(0);
-    for (t = 0; t < 8; t++)
-    {
-        if (txd & 0x80)
-            OLED_SDA(1);
-        else
-            OLED_SDA(0);
-        OLED_SCL(1);
-        txd <<= 1;
-        OLED_SCL(0);
-    }
+    IIC_Start();
+    IIC_SendByte(0x78);
+    IIC_SendByte(0x40); // 写数据寄存器地址
+    IIC_SendByte(data);
+    IIC_Stop();
 }
