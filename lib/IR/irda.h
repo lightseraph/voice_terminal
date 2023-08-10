@@ -21,6 +21,7 @@ extern const uint8_t REMOTE_ID;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 uint8_t remote_scan(void);
+uint8_t get_IR_Address(void);
 void DataCollect(TIM_HandleTypeDef *htim);
 
 #endif

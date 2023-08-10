@@ -88,9 +88,9 @@ const uint8_t LOCAL_ID[16] = {
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -153,9 +153,9 @@ int main(void)
   OLED_ShowString(35, 21, (u8 *)freq_char, 16);
   OLED_ShowString(77, 25, (u8 *)"MHz", 12);
   OLED_ShowString(35, 43, (u8 *)"ID:", 16);
-  Disp_ID(local_id);
-  //  OLED_ShowNum(50, 40, 12, 2, 16);
-  //        TX_WriteID(USER_DATA.UserId.dword);
+  // Disp_ID(local_id);
+  //   OLED_ShowNum(50, 40, 12, 2, 16);
+  //         TX_WriteID(USER_DATA.UserId.dword);
 
   /* USER CODE END 2 */
 
@@ -169,14 +169,29 @@ int main(void)
     /* USER CODE BEGIN 3 */
     delay_nms(50);
     KEY_Scan();
-    if (interval > 20)
+    /* if (interval > 20)
     {
       IR_PostData(0x02);
       interval = 0;
-    }
+    } */
     // HAL_GPIO_WritePin(IR_GPIO_Port, IR_Pin, SET);   限流电阻15欧，红外发射工作电流130mA
-    if (remote_scan() == 0x02)
+    uint8_t irda = get_IR_Address();
+    if (irda != 0xee)
+    {
+      // printf("%0X", irda);
+      char addr_char[6];
+      sprintf(addr_char, "%#X ", irda);
+      OLED_ShowString(35, 43, (u8 *)addr_char, 16);
       Flash_LED(LED_RED, 50, 1, FOLLOW_PREVIOUS);
+      interval = 0;
+    }
+    else if (interval > 30)
+    {
+      char addr_char[6] = "NO IR";
+      OLED_ShowString(35, 43, (u8 *)addr_char, 16);
+    }
+    /* if (remote_scan() == 0x02)
+      Flash_LED(LED_RED, 50, 1, FOLLOW_PREVIOUS); */
 
     interval++;
   }
@@ -184,9 +199,9 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -194,12 +209,12 @@ void SystemClock_Config(void)
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -212,9 +227,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -258,9 +272,9 @@ void Disp_ID(u8 id_index)
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -272,14 +286,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

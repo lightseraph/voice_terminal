@@ -101,6 +101,27 @@ uint8_t remote_scan(void)
     return sta;
 }
 
+uint8_t get_IR_Address(void)
+{
+    // uint8_t sta = 0;
+    uint8_t t1, t2;
+
+    if (g_remote_sta & (1 << 6)) /* 得到一个按键的所有信息了 */
+    {
+        t1 = g_remote_data;               /* 得到地址码 */
+        t2 = (g_remote_data >> 8) & 0xff; /* 得到地址反码 */
+        if ((t1 == (uint8_t)~t2))
+        {
+            g_remote_data = 0;
+            g_remote_sta = 0;
+            g_valid_channel = 0;
+            return t1;
+        }
+    }
+
+    return 0xee;
+}
+
 void DataCollect(TIM_HandleTypeDef *htim)
 {
     uint16_t dval;
